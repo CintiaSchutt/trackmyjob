@@ -14,12 +14,19 @@ A comprehensive job application tracking platform built with Next.js (web) and R
 
 ## 🚀 Tech Stack
 
-### Frontend (Web & Mobile)
-- Next.js (web) and React Native (mobile)
+### Frontend (Web)
+- Next.js
 - TypeScript
-- Tailwind CSS with NativeWind for consistent styling
+- Tailwind CSS for styling
 - React Query for data fetching
 - Zustand for state management
+
+### Mobile
+- React Native
+- TypeScript
+- React Native Paper UI components
+- React Native StyleSheet for custom styling
+- Same data fetching and state management as web
 
 ### Backend
 - Node.js with Express
