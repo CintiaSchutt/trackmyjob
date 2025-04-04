@@ -1,63 +1,16 @@
 # TrackMyJob
 
-A comprehensive job search and application tracking platform built with React (web) and React Native (mobile). This project serves as a learning journey from Angular to React/React Native with TypeScript.
+A comprehensive job application tracking platform built with Next.js (web) and React Native (mobile).
 
-## 🎯 Vision
+## 📱 Features
 
-TrackMyJob aims to be your all-in-one job search companion, helping you:
-- Search and discover job opportunities through RapidAPI integration
-- Tailor your applications with AI-powered resume and cover letter customization
-- Track your job applications systematically
-- Manage your job search process efficiently
-
-## 📱 Key Features
-
-### Job Search
-- Centralized job search interface integrated with RapidAPI
-- Save jobs to favorites
-- Detailed job viewing and analysis
-
-### AI-Powered Application Tools
-- Smart resume tailoring based on job descriptions
-- Cover letter customization assistance
-- Job description analysis and keyword extraction
-
-### Application Tracking
-- Comprehensive application status management:
-  - Company and position details
-  - Work type (Remote/On-site/Hybrid)
-  - Application stages (Interested/Applied/Interviewed/Rejected)
-  - Referral tracking
-  - Follow-up message management
-  - Important dates
-  - Salary information
-  - Document management (Resumes/Cover Letters)
-  - Company information and website
-
-## 🛠️ Tech Stack
-
-### Frontend
-- React (Web Application)
-- React Native (Mobile Application)
-- TypeScript
-- Modern UI/UX libraries (to be determined)
-
-### Backend
-- Node.js
-- Neon PostgreSQL
-- RESTful API
-
-### Integration & Services
-- RapidAPI for job listings
-- AI services for document customization
-- GitHub Actions for CI/CD
-
-### Development Tools
-- GitHub for:
-  - Version Control
-  - Project Management (Issues & Projects)
-  - CI/CD (GitHub Actions)
-  - Deployment
+- Track job applications status
+- Manage application deadlines
+- Store important job details
+- Monitor interview processes
+- Keep notes for each application
+- AI-powered resume and cover letter customization
+- Job search integration via RapidAPI
 
 ## 🚀 Getting Started
 
@@ -65,77 +18,175 @@ TrackMyJob aims to be your all-in-one job search companion, helping you:
 
 - Node.js (version 16 or higher)
 - npm or yarn
+- React Native development environment setup
+- iOS Simulator (for Mac users) or Android Emulator
 - Git
-- PostgreSQL (for local development)
 
-### Installation
+### Nx Monorepo Setup Guide
 
-1. Clone the repository:
+#### 1. Create Nx Workspace
+
 ```bash
-git clone https://github.com/cintiaschutt/trackmyjob.git
-```
+# Create a new Nx workspace
+npx create-nx-workspace@latest trackmyjob \
+  --preset=npm \
+  --nx-cloud=false \
+  --packageManager=npm
 
-2. Navigate to the project directory:
-```bash
+# Navigate to project directory
 cd trackmyjob
 ```
 
-3. Install dependencies:
-```bash
-npm install
-# or
-yarn install
-```
-
-4. Set up environment variables:
-```bash
-cp .env.example .env
-```
-Then edit `.env` with your configuration
-
-5. Start the development server:
-```bash
-# For web
-npm run dev
-# or
-yarn dev
-
-# For mobile
-npm run start
-# or
-yarn start
-```
-
-## 📱 Mobile Development
-
-For React Native development:
+#### 2. Install Required Dependencies
 
 ```bash
-# Run on iOS
-npm run ios
-# or
-yarn ios
-
-# Run on Android
-npm run android
-# or
-yarn android
+# Install Nx plugins and core dependencies
+npm install -D @nx/react @nx/next @nx/react-native @nx/node @nx/express
+npm install -D tailwindcss postcss autoprefixer
+npm install -D @nx/js @nx/workspace
 ```
 
-## 🗃️ Project Structure
+#### 3. Create Applications
+
+```bash
+# Create Next.js web application
+nx g @nx/next:app web \
+  --directory=apps/web \
+  --style=css \
+  --routing=true
+
+# Create React Native application
+nx g @nx/react-native:app mobile \
+  --directory=apps/mobile \
+  --routing=true
+
+# Create Express backend
+nx g @nx/express:app api \
+  --directory=apps/api \
+  --frontendProject=web
+```
+
+#### 4. Create Shared Libraries
+
+```bash
+# Create shared types library
+nx g @nx/js:lib types \
+  --directory=libs/shared/types \
+  --bundler=none
+
+# Create shared UI components library
+nx g @nx/react:lib ui \
+  --directory=libs/shared/ui \
+  --bundler=vite
+
+# Create shared utilities library
+nx g @nx/js:lib utils \
+  --directory=libs/shared/utils \
+  --bundler=none
+
+# Create shared API interfaces library
+nx g @nx/js:lib api \
+  --directory=libs/shared/api \
+  --bundler=none
+
+# Create shared state management library
+nx g @nx/js:lib state \
+  --directory=libs/shared/state \
+  --bundler=none
+```
+
+#### 5. Configure Tailwind CSS (Web)
+
+```bash
+# Initialize Tailwind CSS
+cd apps/web
+npx tailwindcss init -p
+
+# Update tailwind.config.js
+module.exports = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}',
+    '../../libs/shared/ui/**/*.{js,ts,jsx,tsx}',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+#### 6. Set Up Development Environment
+
+```bash
+# Install additional dependencies
+npm install @tanstack/react-query zustand axios
+
+# Install development dependencies
+npm install -D @testing-library/react @testing-library/react-native jest
+```
+
+### Project Structure
 
 ```
 trackmyjob/
-├── web/                   # React web application
-├── mobile/                # React Native mobile application
-├── shared/                # Shared components and utilities
-├── server/                # Backend API
-└── docs/                  # Documentation
+├── apps/
+│   ├── web/                    # Next.js web app
+│   ├── mobile/                 # React Native app
+│   └── api/                    # Express backend
+├── libs/
+│   ├── shared/
+│   │   ├── types/             # Shared TypeScript interfaces
+│   │   ├── ui/                # Shared UI components
+│   │   ├── utils/             # Shared utilities
+│   │   ├── api/               # Shared API calls
+│   │   └── state/             # Shared state management
+│   ├── web/
+│   │   ├── components/        # Web-specific components
+│   │   └── features/          # Web-specific features
+│   └── mobile/
+│       ├── components/        # Mobile-specific components
+│       └── features/          # Mobile-specific features
 ```
 
-## 🤝 Contributing
+### Running the Applications
 
-This project is currently in development. Contributions, ideas, and feedback are welcome! Feel free to check the [issues page](https://github.com/cintiaschutt/trackmyjob/issues).
+```bash
+# Start web application
+nx serve web
+
+# Start mobile application
+nx serve mobile
+
+# Start backend
+nx serve api
+
+# Run multiple applications
+nx run-many --target=serve --projects=web,api
+```
+
+### Development Workflow
+
+1. Create new features in shared libraries when they can be used by both platforms
+2. Use platform-specific libraries for features that are unique to web or mobile
+3. Use the `@trackmyjob` namespace to import shared code:
+
+```typescript
+import { Job } from '@trackmyjob/shared/types';
+import { useJobs } from '@trackmyjob/shared/state';
+import { formatDate } from '@trackmyjob/shared/utils';
+```
+
+## 🛠️ Built With
+
+- Next.js & React Native
+- TypeScript
+- Tailwind CSS
+- Zustand for state management
+- React Query for data fetching
+- Express.js backend
+- Neon PostgreSQL
+- GitHub Actions for CI/CD
 
 ## 📝 License
 
