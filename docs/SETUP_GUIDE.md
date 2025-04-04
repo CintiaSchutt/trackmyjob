@@ -22,8 +22,12 @@ cd trackmyjob
 ```bash
 # Install Nx plugins and core dependencies
 npm install -D @nx/react @nx/next @nx/react-native @nx/node @nx/express
-npm install -D tailwindcss postcss autoprefixer
 npm install -D @nx/js @nx/workspace
+
+# Install Tailwind CSS dependencies
+npm install -D tailwindcss postcss autoprefixer
+npm install -D nativewind
+npm install -D @babel/plugin-transform-flow-strip-types
 
 # Install project dependencies
 npm install @tanstack/react-query zustand axios
@@ -81,6 +85,8 @@ nx g @nx/js:lib state \
 
 ### 5. Configure Tailwind CSS
 
+#### For Web (Next.js)
+
 ```bash
 # Navigate to web app directory
 cd apps/web
@@ -107,6 +113,40 @@ echo "@tailwind base;
 @tailwind utilities;" > styles/globals.css
 ```
 
+#### For Mobile (React Native)
+
+```bash
+# Navigate to mobile app directory
+cd apps/mobile
+
+# Create tailwind.config.js
+npx tailwindcss init
+
+# Update tailwind.config.js
+module.exports = {
+  content: [
+    "./app/**/*.{js,jsx,ts,tsx}",
+    "./components/**/*.{js,jsx,ts,tsx}",
+    "../../libs/shared/ui/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+
+# Update babel.config.js to include NativeWind
+module.exports = {
+  presets: ['module:metro-react-native-babel-preset'],
+  plugins: ["nativewind/babel"],
+}
+
+# Create a PostCSS config
+echo "module.exports = {
+  plugins: [require('tailwindcss')],
+};" > postcss.config.js
+```
+
 ### 6. Configure Environment Variables
 
 Create `.env` files for each application:
@@ -123,6 +163,36 @@ RAPIDAPI_KEY=your_key_here
 # API (.env in apps/api)
 DATABASE_URL=your_neon_db_url
 JWT_SECRET=your_secret_here
+```
+
+## Using Tailwind CSS
+
+### In Web Components
+
+```tsx
+// Example web component
+export function Button({ children }) {
+  return (
+    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+      {children}
+    </button>
+  );
+}
+```
+
+### In React Native Components
+
+```tsx
+// Example mobile component
+import { Text, TouchableOpacity } from 'react-native';
+
+export function Button({ children }) {
+  return (
+    <TouchableOpacity className="bg-blue-500 active:bg-blue-700 rounded-lg py-2 px-4">
+      <Text className="text-white font-bold text-center">{children}</Text>
+    </TouchableOpacity>
+  );
+}
 ```
 
 ## Running the Applications
@@ -175,23 +245,22 @@ nx test api
 nx run-many --target=test --projects=web,mobile,api
 ```
 
-## Linting
-
-```bash
-# Lint web application
-nx lint web
-
-# Lint mobile application
-nx lint mobile
-
-# Lint api
-nx lint api
-
-# Lint all applications
-nx run-many --target=lint --projects=web,mobile,api
-```
-
 ## Common Issues and Solutions
+
+### NativeWind Setup Issues
+
+1. If you see "Unrecognized class" warnings:
+   - Make sure you've properly configured babel.config.js
+   - Check that the paths in tailwind.config.js are correct
+   - Run `nx reset` to clear the cache
+
+2. If styles aren't applying:
+   - Ensure you've imported styles in your app entry file:
+     ```tsx
+     // app/App.tsx
+     import 'nativewind/css';
+     ```
+   - Check that the component is using the className prop correctly
 
 ### React Native Setup
 
@@ -219,16 +288,6 @@ nx reset
 
 # Rebuild all applications
 nx run-many --target=build --projects=web,mobile,api --skip-nx-cache
-```
-
-### Dependency Issues
-
-If you encounter peer dependency issues:
-
-```bash
-# Clean install with legacy peer deps
-rm -rf node_modules package-lock.json
-npm install --legacy-peer-deps
 ```
 
 ## Additional Setup
