@@ -1,23 +1,72 @@
 # TrackMyJob
 
-A React Native application to help you track and manage your job applications effectively.
+A comprehensive job search and application tracking platform built with React (web) and React Native (mobile). This project serves as a learning journey from Angular to React/React Native with TypeScript.
 
-## 📱 Features
+## 🎯 Vision
 
-- Track job applications status
-- Manage application deadlines
-- Store important job details
-- Monitor interview processes
-- Keep notes for each application
+TrackMyJob aims to be your all-in-one job search companion, helping you:
+- Search and discover job opportunities through RapidAPI integration
+- Tailor your applications with AI-powered resume and cover letter customization
+- Track your job applications systematically
+- Manage your job search process efficiently
+
+## 📱 Key Features
+
+### Job Search
+- Centralized job search interface integrated with RapidAPI
+- Save jobs to favorites
+- Detailed job viewing and analysis
+
+### AI-Powered Application Tools
+- Smart resume tailoring based on job descriptions
+- Cover letter customization assistance
+- Job description analysis and keyword extraction
+
+### Application Tracking
+- Comprehensive application status management:
+  - Company and position details
+  - Work type (Remote/On-site/Hybrid)
+  - Application stages (Interested/Applied/Interviewed/Rejected)
+  - Referral tracking
+  - Follow-up message management
+  - Important dates
+  - Salary information
+  - Document management (Resumes/Cover Letters)
+  - Company information and website
+
+## 🛠️ Tech Stack
+
+### Frontend
+- React (Web Application)
+- React Native (Mobile Application)
+- TypeScript
+- Modern UI/UX libraries (to be determined)
+
+### Backend
+- Node.js
+- Neon PostgreSQL
+- RESTful API
+
+### Integration & Services
+- RapidAPI for job listings
+- AI services for document customization
+- GitHub Actions for CI/CD
+
+### Development Tools
+- GitHub for:
+  - Version Control
+  - Project Management (Issues & Projects)
+  - CI/CD (GitHub Actions)
+  - Deployment
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js (version 14 or higher)
+- Node.js (version 16 or higher)
 - npm or yarn
-- React Native development environment setup
-- iOS Simulator (for Mac users) or Android Emulator
+- Git
+- PostgreSQL (for local development)
 
 ### Installation
 
@@ -38,40 +87,59 @@ npm install
 yarn install
 ```
 
-4. Start the development server:
+4. Set up environment variables:
 ```bash
-npm start
+cp .env.example .env
+```
+Then edit `.env` with your configuration
+
+5. Start the development server:
+```bash
+# For web
+npm run dev
+# or
+yarn dev
+
+# For mobile
+npm run start
 # or
 yarn start
 ```
 
-5. Run the application:
+## 📱 Mobile Development
+
+For React Native development:
+
 ```bash
-# For iOS
+# Run on iOS
 npm run ios
 # or
 yarn ios
 
-# For Android
+# Run on Android
 npm run android
 # or
 yarn android
 ```
 
-## 🛠️ Built With
+## 🗃️ Project Structure
 
-- React Native
-- TypeScript
-- React Navigation
-- AsyncStorage for local data persistence
+```
+trackmyjob/
+├── web/                   # React web application
+├── mobile/                # React Native mobile application
+├── shared/                # Shared components and utilities
+├── server/                # Backend API
+└── docs/                  # Documentation
+```
+
+## 🤝 Contributing
+
+This project is currently in development. Contributions, ideas, and feedback are welcome! Feel free to check the [issues page](https://github.com/cintiaschutt/trackmyjob/issues).
 
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/cintiaschutt/trackmyjob/issues).
 
 ## 👩‍💻 Author
 
@@ -81,4 +149,4 @@ Contributions, issues, and feature requests are welcome! Feel free to check the 
 
 ## ⭐️ Show your support
 
-Give a ⭐️ if this project helped you!
+Give a ⭐️ if this project interests you!
