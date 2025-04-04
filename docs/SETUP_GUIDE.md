@@ -24,10 +24,10 @@ cd trackmyjob
 npm install -D @nx/react @nx/next @nx/react-native @nx/node @nx/express
 npm install -D @nx/js @nx/workspace
 
-# Install Tailwind CSS dependencies
-npm install -D tailwindcss postcss autoprefixer
-npm install -D nativewind
-npm install -D @babel/plugin-transform-flow-strip-types
+# Install styling dependencies
+npm install -D tailwindcss postcss autoprefixer # For web only
+npm install react-native-paper react-native-safe-area-context react-native-vector-icons
+npm install react-native-paper-dates # Optional, for date inputs
 
 # Install project dependencies
 npm install @tanstack/react-query zustand axios
@@ -83,9 +83,9 @@ nx g @nx/js:lib state \
   --bundler=none
 ```
 
-### 5. Configure Tailwind CSS
+### 5. Configure Styling
 
-#### For Web (Next.js)
+#### For Web (Next.js with Tailwind)
 
 ```bash
 # Navigate to web app directory
@@ -113,38 +113,57 @@ echo "@tailwind base;
 @tailwind utilities;" > styles/globals.css
 ```
 
-#### For Mobile (React Native)
+#### For Mobile (React Native Paper)
 
 ```bash
 # Navigate to mobile app directory
 cd apps/mobile
 
-# Create tailwind.config.js
-npx tailwindcss init
-
-# Update tailwind.config.js
-module.exports = {
-  content: [
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./components/**/*.{js,jsx,ts,tsx}",
-    "../../libs/shared/ui/**/*.{js,jsx,ts,tsx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-
-# Update babel.config.js to include NativeWind
+# Update babel.config.js to include react-native-vector-icons
 module.exports = {
   presets: ['module:metro-react-native-babel-preset'],
-  plugins: ["nativewind/babel"],
-}
+};
 
-# Create a PostCSS config
-echo "module.exports = {
-  plugins: [require('tailwindcss')],
-};" > postcss.config.js
+# For iOS, install pods
+cd ios && pod install && cd ..
+```
+
+Create a theme configuration file:
+
+```tsx
+// apps/mobile/src/theme.ts
+import { MD3LightTheme, configureFonts } from 'react-native-paper';
+
+export const theme = {
+  ...MD3LightTheme,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: '#2563eb', // blue-600
+    secondary: '#4f46e5', // indigo-600
+    // Add more custom colors as needed
+  },
+  fonts: configureFonts({
+    config: {
+      fontFamily: 'System',
+    },
+  }),
+};
+```
+
+Set up the Paper provider:
+
+```tsx
+// apps/mobile/src/App.tsx
+import { PaperProvider } from 'react-native-paper';
+import { theme } from './theme';
+
+export default function App() {
+  return (
+    <PaperProvider theme={theme}>
+      {/* Your app content */}
+    </PaperProvider>
+  );
+}
 ```
 
 ### 6. Configure Environment Variables
@@ -165,32 +184,93 @@ DATABASE_URL=your_neon_db_url
 JWT_SECRET=your_secret_here
 ```
 
-## Using Tailwind CSS
+## Component Examples
 
-### In Web Components
+### Mobile Components (React Native)
 
 ```tsx
-// Example web component
-export function Button({ children }) {
+// Example of a custom button component
+import { StyleSheet } from 'react-native';
+import { Button } from 'react-native-paper';
+
+export function CustomButton({ onPress, children }) {
   return (
-    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+    <Button
+      mode="contained"
+      onPress={onPress}
+      style={styles.button}
+      labelStyle={styles.buttonText}
+    >
+      {children}
+    </Button>
+  );
+}
+
+const styles = StyleSheet.create({
+  button: {
+    borderRadius: 8,
+    marginVertical: 8,
+  },
+  buttonText: {
+    fontSize: 16,
+    letterSpacing: 0.5,
+  },
+});
+
+// Example of a card component
+import { Card, Text } from 'react-native-paper';
+
+export function JobCard({ title, company, location }) {
+  return (
+    <Card style={styles.card}>
+      <Card.Content>
+        <Text variant="titleLarge" style={styles.title}>{title}</Text>
+        <Text variant="bodyMedium">{company}</Text>
+        <Text variant="bodySmall" style={styles.location}>{location}</Text>
+      </Card.Content>
+    </Card>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    marginVertical: 8,
+    marginHorizontal: 16,
+    elevation: 2,
+  },
+  title: {
+    marginBottom: 8,
+  },
+  location: {
+    marginTop: 4,
+    color: '#666',
+  },
+});
+```
+
+### Web Components (Next.js)
+
+```tsx
+// Example of a button component
+export function Button({ children, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    >
       {children}
     </button>
   );
 }
-```
 
-### In React Native Components
-
-```tsx
-// Example mobile component
-import { Text, TouchableOpacity } from 'react-native';
-
-export function Button({ children }) {
+// Example of a card component
+export function JobCard({ title, company, location }) {
   return (
-    <TouchableOpacity className="bg-blue-500 active:bg-blue-700 rounded-lg py-2 px-4">
-      <Text className="text-white font-bold text-center">{children}</Text>
-    </TouchableOpacity>
+    <div className="bg-white shadow-md rounded-lg p-6 mb-4">
+      <h3 className="text-xl font-bold mb-2">{title}</h3>
+      <p className="text-gray-700">{company}</p>
+      <p className="text-gray-500 mt-1">{location}</p>
+    </div>
   );
 }
 ```
@@ -229,38 +309,20 @@ nx build api
 nx run-many --target=build --projects=web,mobile,api
 ```
 
-## Testing
-
-```bash
-# Run tests for web
-nx test web
-
-# Run tests for mobile
-nx test mobile
-
-# Run tests for api
-nx test api
-
-# Run all tests
-nx run-many --target=test --projects=web,mobile,api
-```
-
 ## Common Issues and Solutions
 
-### NativeWind Setup Issues
+### React Native Paper Setup
 
-1. If you see "Unrecognized class" warnings:
-   - Make sure you've properly configured babel.config.js
-   - Check that the paths in tailwind.config.js are correct
-   - Run `nx reset` to clear the cache
-
-2. If styles aren't applying:
-   - Ensure you've imported styles in your app entry file:
-     ```tsx
-     // app/App.tsx
-     import 'nativewind/css';
+1. If vector icons are not showing:
+   - iOS: Make sure you've run `pod install`
+   - Android: Add the following to `android/app/build.gradle`:
+     ```gradle
+     apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
      ```
-   - Check that the component is using the className prop correctly
+
+2. If theme is not applying:
+   - Check that PaperProvider is wrapping your app
+   - Verify theme object structure
 
 ### React Native Setup
 
