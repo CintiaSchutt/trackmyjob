@@ -9,8 +9,7 @@ This document provides detailed instructions for setting up the TrackMyJob devel
 ```bash
 # Create a new Nx workspace
 npx create-nx-workspace@latest trackmyjob \
-  --preset=npm \
-  --nx-cloud=false \
+  --preset=ts \
   --packageManager=npm
 
 # Navigate to project directory
@@ -37,50 +36,34 @@ npm install @testing-library/react @testing-library/react-native jest --save-dev
 ### 3. Create Applications
 
 ```bash
-# Create Next.js web application
-nx g @nx/next:app web \
-  --directory=apps/web \
-  --style=css \
-  --routing=true
+# Create Next.js web application, Express backend & React Native
+npx nx g @nx/next:app web && npx nx g @nx/express:app api && npx nx g @nx/react-native:app mobile
 
-# Create React Native application
-nx g @nx/react-native:app mobile \
-  --directory=apps/mobile \
-  --routing=true
-
-# Create Express backend
-nx g @nx/express:app api \
-  --directory=apps/api \
-  --frontendProject=web
+brew install cocoapods
 ```
 
 ### 4. Create Shared Libraries
 
 ```bash
 # Create shared types library
-nx g @nx/js:lib types \
+nx g @nx/js:lib shared-types \
   --directory=libs/shared/types \
-  --bundler=none
+  --bundler=vite
 
 # Create shared UI components library
-nx g @nx/react:lib ui \
+nx g @nx/react:lib shared-ui \
   --directory=libs/shared/ui \
   --bundler=vite
 
 # Create shared utilities library
-nx g @nx/js:lib utils \
+nx g @nx/js:lib shared-utils \
   --directory=libs/shared/utils \
-  --bundler=none
-
-# Create shared API interfaces library
-nx g @nx/js:lib api \
-  --directory=libs/shared/api \
-  --bundler=none
+  --bundler=vite
 
 # Create shared state management library
-nx g @nx/js:lib state \
+nx g @nx/js:lib shared-state \
   --directory=libs/shared/state \
-  --bundler=none
+  --bundler=vite
 ```
 
 ### 5. Configure Styling
