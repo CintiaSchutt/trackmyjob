@@ -179,16 +179,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 - Check our [FAQ](docs/FAQ.md)
-- Join our [Discord server](https://discord.gg/trackmyjob)
-- Email us at support@trackmyjob.com
 - Create an issue on GitHub
-
-## 🗺️ Roadmap
-
-- [ ] Enhanced job search analytics
-- [ ] Interview preparation tools
-- [ ] Resume builder
-- [ ] Salary negotiation resources
-- [ ] Company research integration
-- [ ] Network management
-- [ ] Career development tracking

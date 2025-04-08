@@ -68,3 +68,14 @@ If you need assistance with the documentation:
 
 - Check the [FAQ](FAQ.md)
 - Create an issue on GitHub
+
+## 🗺️ Roadmap
+
+- [ ] Enhanced job search analytics
+- [ ] Interview preparation tools
+- [ ] Resume builder
+- [ ] Salary negotiation resources
+- [ ] Company research integration
+- [ ] Network management
+- [ ] Career development tracking
+
