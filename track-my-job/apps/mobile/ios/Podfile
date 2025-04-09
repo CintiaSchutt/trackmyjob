@@ -1,0 +1,38 @@
+require_relative '../../../node_modules/react-native/scripts/react_native_pods'
+require_relative '../../../node_modules/@react-native-community/cli-platform-ios/native_modules'
+
+# Update to iOS 16.0 for React-RuntimeHermes compatibility
+platform :ios, '16.0'
+
+prepare_react_native_project!
+
+target 'Mobile' do
+  # Set root path for native modules
+  project_root = File.dirname(File.dirname(File.dirname(File.dirname(__FILE__))))
+  
+  use_react_native!(
+    :path => "../../../node_modules/react-native",
+    :hermes_enabled => true,
+    :fabric_enabled => false,
+    :app_path => project_root
+  )
+
+  target 'MobileTests' do
+    inherit! :complete
+  end
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      "../../../node_modules/react-native",
+      :mac_catalyst_enabled => false
+    )
+    
+    # Update all pods to use iOS 16.0
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
+      end
+    end
+  end
+end
