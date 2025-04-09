@@ -1,28 +1,76 @@
 # Setup Guide
 
-This document provides detailed instructions for setting up the TrackMyJob development environment.
+This document provides detailed instructions for setting up the TrackMyJob development environment. The entire project uses TypeScript for type safety and better developer experience.
+
+## Project Structure
+
+```
+trackmyjob/
+├── apps/                    # Application projects (all in TypeScript)
+│   ├── web/                # Next.js web application (.tsx)
+│   ├── web-e2e/            # Web end-to-end tests (.ts)
+│   ├── mobile/             # React Native mobile app (.tsx)
+│   ├── api/                # Express backend (.ts)
+│   └── api-e2e/            # API end-to-end tests (.ts)
+│
+├── libs/                   # Shared libraries (all in TypeScript)
+│   └── shared/            # Shared code namespace
+│       ├── types/         # Shared TypeScript types/interfaces (.ts)
+│       ├── ui/            # Shared UI components (.tsx)
+│       ├── utils/         # Shared utility functions (.ts)
+│       └── state/         # Shared state management (.ts)
+```
 
 ## Initial Setup
 
 ### 1. Create Nx Workspace
 
 ```bash
-# Create a new Nx workspace
+# Create a new Nx workspace with TypeScript preset
 npx create-nx-workspace@latest trackmyjob \
-  --preset=npm \
-  --nx-cloud=false \
-  --packageManager=npm
+  --preset=ts \
+  --packageManager=npm \
+  --strict \
+  --no-nxCloud
 
 # Navigate to project directory
 cd trackmyjob
 ```
 
-### 2. Install Dependencies
+### 2. Configure TypeScript
+
+Update the base TypeScript configuration in `tsconfig.base.json`:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@trackmyjob/types": ["libs/shared/types/src/index.ts"],
+      "@trackmyjob/ui": ["libs/shared/ui/src/index.ts"],
+      "@trackmyjob/utils": ["libs/shared/utils/src/index.ts"],
+      "@trackmyjob/state": ["libs/shared/state/src/index.ts"]
+    }
+  }
+}
+```
+
+### 3. Install Dependencies
 
 ```bash
 # Install Nx plugins and core dependencies
 npm install -D @nx/react @nx/next @nx/react-native @nx/node @nx/express
 npm install -D @nx/js @nx/workspace
+
+# Install TypeScript and related dependencies
+npm install -D typescript @types/node @types/react @types/react-dom @types/express
+npm install -D @typescript-eslint/eslint-plugin @typescript-eslint/parser
 
 # Install styling dependencies
 npm install -D tailwindcss postcss autoprefixer # For web only
@@ -31,59 +79,59 @@ npm install react-native-paper-dates # Optional, for date inputs
 
 # Install project dependencies
 npm install @tanstack/react-query zustand axios
-npm install @testing-library/react @testing-library/react-native jest --save-dev
+npm install @testing-library/react @testing-library/react-native jest @types/jest --save-dev
 ```
 
-### 3. Create Applications
+### 4. Create Applications
 
 ```bash
 # Create Next.js web application
-nx g @nx/next:app web \
-  --directory=apps/web \
-  --style=css \
-  --routing=true
-
-# Create React Native application
-nx g @nx/react-native:app mobile \
-  --directory=apps/mobile \
-  --routing=true
+nx g @nx/next:app web --directory=apps/web
 
 # Create Express backend
-nx g @nx/express:app api \
-  --directory=apps/api \
-  --frontendProject=web
+nx g @nx/express:app api --directory=apps/api
+
+# Create React Native mobile app
+nx g @nx/react-native:app mobile --directory=apps/mobile
+
+# Create E2E test apps
+nx g @nx/playwright:app web-e2e --directory=apps/web-e2e
+nx g @nx/jest:app api-e2e --directory=apps/api-e2e
+
+# Install iOS dependencies
+brew install cocoapods
 ```
 
-### 4. Create Shared Libraries
+### 5. Create Shared Libraries
 
 ```bash
 # Create shared types library
-nx g @nx/js:lib types \
+nx g @nx/typescript:lib types \
   --directory=libs/shared/types \
-  --bundler=none
+  --bundler=vite \
+  --strict
 
 # Create shared UI components library
 nx g @nx/react:lib ui \
   --directory=libs/shared/ui \
-  --bundler=vite
+  --bundler=vite \
+  --style=css \
+  --strict
 
 # Create shared utilities library
-nx g @nx/js:lib utils \
+nx g @nx/typescript:lib utils \
   --directory=libs/shared/utils \
-  --bundler=none
-
-# Create shared API interfaces library
-nx g @nx/js:lib api \
-  --directory=libs/shared/api \
-  --bundler=none
+  --bundler=vite \
+  --strict
 
 # Create shared state management library
-nx g @nx/js:lib state \
+nx g @nx/react:lib state \
   --directory=libs/shared/state \
-  --bundler=none
+  --bundler=vite \
+  --strict
 ```
 
-### 5. Configure Styling
+### 6. Configure Styling
 
 #### For Web (Next.js with Tailwind)
 
@@ -162,7 +210,7 @@ export default function App() {
 }
 ```
 
-### 6. Configure Environment Variables
+### 7. Configure Environment Variables
 
 Create `.env` files for each application:
 
